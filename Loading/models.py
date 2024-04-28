@@ -22,13 +22,17 @@ class TypeCargo(models.Model):
 class Container(models.Model):
     type_container = models.ForeignKey(
         "TypeContainer", on_delete=models.CASCADE)
+    project_id = models.ForeignKey(
+        "Project", on_delete=models.CASCADE)
     
     
 class Cargoes(models.Model):
     name = models.CharField(max_length=100)
     type_cargo = models.ForeignKey(
         "TypeCargo", on_delete=models.CASCADE)
-    weight = models.FloatField() 
+    weight = models.FloatField()
+    project_id = models.ForeignKey(
+        "Project", on_delete=models.CASCADE)
     
 class Project(models.Model):
     name = models.CharField(max_length=200)
@@ -43,6 +47,4 @@ class Position(models.Model):
         "Cargoes", on_delete=models.CASCADE)
     container_id = models.ForeignKey(
         "Container", on_delete=models.CASCADE)
-    project_id = models.ForeignKey(
-        "Project", on_delete=models.CASCADE)
     
