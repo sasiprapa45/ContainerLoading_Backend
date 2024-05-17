@@ -12,6 +12,12 @@ class CargoesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cargoes
         fields = ['name', 'type_cargo', 'weight', 'project_id']
+        
+        
+class ContainerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Container
+        fields = ['type_container', 'project_id']
 
 # class CargoesSerializer(serializers.ListSerializer):
 #     child = CargoesChildSerializer()
@@ -25,12 +31,6 @@ class CargoesSerializer(serializers.ModelSerializer):
 #         fields = ['name', 'type_cargo', 'weight', 'project_id']
         
 
-
-class ContainerSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Container
-        fields =  '__all__'
-        
 class PositionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Position
