@@ -141,5 +141,5 @@ def Placement(box,cont) : #หาค่า fitness
     fit = fitness((max_box.depth + max_box.position[0]), con[max_n]['width'], max_n+1, cargoes_c)
     # print("fitness; ")
     # print(fit)
-    return boxes_data,fit,boxes
+    return boxes_data,fit,boxes,max_n+1
 

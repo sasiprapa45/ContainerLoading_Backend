@@ -24,10 +24,50 @@ class AddProjectAPIView(APIView):
      def get(self, request, project_name, *args, **kwargs):
         try:
             # สร้างหรือรับข้อมูลโปรเจกต์จากชื่อ
-            project, created = Project.objects.get_or_create(name=project_name)
+            if Project.objects.filter(name=project_name).exists():
+                return Response({'error': 'Project with this name already exists'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            project, created = Project.objects.get_or_create(
+                name=project_name,
+                defaults={
+                    'cargoes_qty': 0,
+                    'cargoes_packed': 0,
+                    'container_qty': 0,
+                    'container_used': 0,
+                    'fitness': 0.0,
+                }
+            )
             return Response({'id': project.pk}, status=status.HTTP_200_OK) # ส่ง ID กลับมาให้ Angular
         except Project.DoesNotExist:
             return Response({'error': 'Project not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+class GetProjectAPIView(APIView):
+    def get_project(self, request, *args, **kwargs):
+        projectall = Project.objects
+        data = [{
+            'id': project.pk,
+            'name': project.name,
+            'cargoes_qty': project.cargoes_qty,
+            'cargoes_packed': project.cargoes_packed,
+            'container_qty': project.container_qty,
+            'container_used': project.container_used,
+            'fitness': project.fitness,
+            } for project in projectall]
+        return JsonResponse(data, safe=False)
+        
+    def get_project_by_pid(request, project_id):
+        projectaid = Project.objects.filter(id=project_id)
+        data = [{
+            'id': project.pk,
+            'name': project.name,
+            'cargoes_qty': project.cargoes_qty,
+            'cargoes_packed': project.cargoes_packed,
+            'container_qty': project.container_qty,
+            'container_used': project.container_used,
+            'fitness': project.fitness,
+            }for project in projectaid]
+        return JsonResponse(data, safe=False)
+    
         
         
 class SaveCargoseAPIView(APIView):
@@ -54,7 +94,7 @@ class CreateGaAPIView(APIView):
      def get(self, request, project_id, *args, **kwargs):
         try:
             # ทำการคำนวณด้วยอัลกอริทึม Population และได้ผลลัพธ์ result
-            result = Population(project_id)  # ต้องอัพเดทดัวโค้ดในนี้ให้ถูกต้องตามโค้ดของคุณ
+            result,cargoes_qty,cargoes_packed,container_qty,container_used,fitness = Population(project_id)
             
             # บันทึกผลลัพธ์ลงในฐานข้อมูล
             for item in result:
@@ -68,11 +108,17 @@ class CreateGaAPIView(APIView):
                     container_id=Container.objects.get(pk=item.container_id),
                 )
                 position.save()
-            
+            project = Project.objects.get(pk=project_id)
+            project.cargoes_qty = cargoes_qty
+            project.cargoes_packed = cargoes_packed
+            project.container_qty = container_qty
+            project.container_used = container_used
+            project.fitness = fitness
+            project.save()
             return JsonResponse({'message': 'Result saved successfully'}, status=200)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
-class GetPositionAPIView(APIView):     
+class GetPositionAPIView(APIView):
     def get_positions_by_project(request, project_id):
         cargoes = Cargoes.objects.filter(project_id=project_id)
         positions = Position.objects.filter(cargoes_id__in=cargoes)
@@ -88,6 +134,7 @@ class GetPositionAPIView(APIView):
             'height': position.cargoes_id.type_cargo.height,
             'width': position.cargoes_id.type_cargo.width,
             'length': position.cargoes_id.type_cargo.length,
+            'color': position.cargoes_id.type_cargo.color,
             'container_id': position.container_id.id
             } for position in positions]
         return JsonResponse(data, safe=False)

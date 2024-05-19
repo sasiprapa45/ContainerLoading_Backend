@@ -15,7 +15,7 @@ class TypeCargo(models.Model):
     height = models.IntegerField()
     width  = models.IntegerField()
     length  = models.IntegerField()
-
+    color = models.CharField(max_length=50)
     def __str__(self):
         return self.type
 
@@ -36,6 +36,11 @@ class Cargoes(models.Model):
     
 class Project(models.Model):
     name = models.CharField(max_length=200)
+    cargoes_qty = models.IntegerField()
+    cargoes_packed = models.IntegerField()
+    container_qty = models.IntegerField()
+    container_used = models.IntegerField()
+    fitness = models.FloatField()
     def __str__(self):
         return self.name
     

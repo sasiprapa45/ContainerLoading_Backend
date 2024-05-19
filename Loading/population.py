@@ -4,11 +4,12 @@ import random
 import heapq
 
 class Chromosome:
-    def __init__(self, gene, fitness, gene_data, boxes):
+    def __init__(self, gene, fitness, gene_data, boxes, con_use):
         self.gene = gene
         self.fitness = fitness
         self.gene_data = gene_data
         self.boxes = boxes
+        self.con_use = con_use
 
     def get_Gene(self):
         return self.gene
@@ -72,7 +73,9 @@ def mutation(chromosome, mutation_rate):
 
 def Population(Pid):
     con = get_container_by_project_id(Pid)
+    container_data = len(con)
     gene = get_cargoes_by_project_id(Pid)
+    cargoes_data = len(gene)
     population = []
     fit = 0
     # print(len(con))
@@ -80,8 +83,8 @@ def Population(Pid):
     # print("---------------------------------------------------------------------------------------------------------")
     for i in range(1,200):
         g = random_Chromosome(gene)
-        boxes_data,fit,boxes = Placement(g,con)
-        population.append(Chromosome(g,fit, boxes_data,boxes))
+        boxes_data,fit,boxes,con_use = Placement(g,con)
+        population.append(Chromosome(g,fit, boxes_data,boxes,con_use))
 
 
 #-------------cross--------------------------
@@ -90,10 +93,10 @@ def Population(Pid):
         parent1 = population[-1].gene
         parent2 = population[-2].gene
         child1, child2 = crossover(parent1, parent2)
-        boxes_data1,fit1,boxes1 = Placement(child1,con)
-        boxes_data2,fit2,boxes2 = Placement(child2,con)
-        population.append(Chromosome(child1, fit1, boxes_data1,boxes1))
-        population.append(Chromosome(child2, fit2, boxes_data2,boxes2))
+        boxes_data1,fit1,boxes1,con_use1 = Placement(child1,con)
+        boxes_data2,fit2,boxes2,con_use2 = Placement(child2,con)
+        population.append(Chromosome(child1, fit1, boxes_data1,boxes1,con_use1))
+        population.append(Chromosome(child2, fit2, boxes_data2,boxes2,con_use2))
         # print("Parent 1:", parent1)
         # print("Parent 2:", parent2)
         # print("Child 1:", child1)
@@ -121,10 +124,12 @@ def Population(Pid):
     # Plot_boxes(min(population, key=lambda chromosome: chromosome.fitness).boxes,con)
     # Plot_boxes(max(population, key=lambda chromosome: chromosome.fitness).boxes,con)  #แสดงการจัดเรียง fitnessมากสุด
     best_chromosome = max(population, key=lambda chromosome: chromosome.fitness)
+    cargoes_packing = len(best_chromosome.gene_data)
+    container_use = best_chromosome.con_use
+    fitness = best_chromosome.fitness
     best_placement = best_chromosome.gene_data
     print(best_placement)
-    return best_placement
-
+    return best_placement,cargoes_data,cargoes_packing,container_data,container_use,fitness
 
 
 

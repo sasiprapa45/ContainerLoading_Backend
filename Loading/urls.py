@@ -19,5 +19,7 @@ urlpatterns = [
     path('get_container_by_project_id/<int:project_id>/', views.get_container_by_project_id, name='get_container_by_project_id'),
     path('create_ga_algorithm/<int:project_id>/', views.CreateGaAPIView.as_view(), name='create_ga_algorithm_by_project_id'),
     path('positions/<int:project_id>/', views.GetPositionAPIView.get_positions_by_project, name='get_positions_by_project'),
-     path('container_by_pid/<int:project_id>/', views. GetContainerAPIView.get_container_by_project, name='get_container_by_project'),
+    path('container_by_pid/<int:project_id>/', views. GetContainerAPIView.get_container_by_project, name='get_container_by_project'),
+    path('project_by_pid/<int:project_id>/', views. GetProjectAPIView.get_project_by_pid, name='get_project_by_pid'),
+    path('project/', views. GetProjectAPIView.get_project, name='get_project'),
 ]
