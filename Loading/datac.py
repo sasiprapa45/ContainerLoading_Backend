@@ -1,5 +1,5 @@
 
-from .models import Cargoes, Container
+from .models import Cargoes, Container, Project
 
 def get_cargoes_by_project_id(project_id):
     cargoes_with_type = Cargoes.objects.filter(project_id=project_id).select_related('type_cargo')
@@ -27,6 +27,7 @@ def get_container_by_project_id(project_id):
         container_list.append({
             'id': con.id,
             'project_id': con.project_id.id,  # เปลี่ยน project_id เป็น ID ของโปรเจกต์
+            'weight_pack': con.weight_pack,
             'type_container_id': con.type_container.id,
             'type_container': con.type_container.type,
             'height': con.type_container.height,
@@ -36,30 +37,16 @@ def get_container_by_project_id(project_id):
         })
     return container_list
 
-# def get_container_by_project_id(project_id):
-#     url = f'http://127.0.0.1:8000/get_container_by_project_id/{project_id}/'  # แก้ตาม URL จริงของคุณ
-#     response = requests.get(url)
-#     if response.status_code == 200:
-#         container_list = response.json().get('container_list')
-#         return container_list
-#     else:
-#         print("Error:", response.status_code)
-#         return []
-
-# def get_cargoes_by_project_id(project_id):
-#     url = f'http://127.0.0.1:8000/get_cargoes_by_project_id/{project_id}/'  # แก้ตาม URL จริงของคุณ
-#     response = requests.get(url)
-#     if response.status_code == 200:
-#         cargoes_list = response.json().get('cargoes_list')
-#         return cargoes_list
-#     else:
-#         print("Error:", response.status_code)
-#         return []
-
-# project_id = 21  # แก้เป็น project_id ที่ต้องการค้นหา cargoes
-# cargoes_list = get_container_by_project_id(project_id)
-# print(cargoes_list)
-
-# cargoes_list=Cargoes(21)
-# print(cargoes_list)
-# # Containers()
+def get__project(project_id):
+    project = Project.objects.get(pk=project_id)
+    data = {
+            'id': project.pk,
+            'name': project.name,
+            'cargoes_qty': project.cargoes_qty,
+            'cargoes_packed': project.cargoes_packed,
+            'container_qty': project.container_qty,
+            'container_used': project.container_used,
+            'fitness': project.fitness,
+            'weight_check': project.weight_check,
+        }
+    return data
